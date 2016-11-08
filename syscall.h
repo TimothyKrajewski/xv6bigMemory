@@ -22,3 +22,5 @@
 #define SYS_close  21
 #define SYS_getcwd 22
 #define SYS_ps	   23
+#define SYS_wait2  24
+#define SYS_yield  25

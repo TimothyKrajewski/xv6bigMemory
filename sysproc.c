@@ -81,16 +81,30 @@ sys_sleep(void)
 int
 sys_uptime(void)
 {
-  //uint xticks;
+  uint xticks;
   
-  //acquire(&tickslock);
-  //xticks = ticks;
-  //release(&tickslock);
-  //return xticks;
-  return -1;
+  acquire(&tickslock);
+  xticks = ticks;
+  release(&tickslock);
+  return xticks;
+  //return -1;
 }
 
 int sys_ps(void)
 {
 	return ps();
+}
+
+int sys_yield()
+{
+yield();
+return 0;
+}
+
+int sys_wait2(void)
+{
+	int *retime, *rutime, *stime;
+	if(argptr(2,(void*)&stime, sizeof(stime) < 0)
+		return -1;
+	return wait2(retime,rutime,stime);
 }
