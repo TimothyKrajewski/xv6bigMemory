@@ -92,13 +92,13 @@ sys_sleep(void)
 int
 sys_uptime(void)
 {
-  //uint xticks;
+  uint xticks;
   
-  //acquire(&tickslock);
-  //xticks = ticks;
-  //release(&tickslock);
-  //return xticks;
-  return -1;
+  acquire(&tickslock);
+  xticks = ticks;
+  release(&tickslock);
+  return xticks;
+  //return -1;
 }
 
 int sys_ps(void)
