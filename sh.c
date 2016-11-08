@@ -4,14 +4,16 @@
 #include "user.h"
 #include "fcntl.h"
 
+
 // Parsed command representation
 #define EXEC  1
 #define REDIR 2
 #define PIPE  3
 #define LIST  4
 #define BACK  5
-#define MAX_PATH 512
+
 #define MAXARGS 10
+#define MAX_HISTORY 10
 
 struct cmd {
   int type;
@@ -52,6 +54,7 @@ struct backcmd {
 int fork1(void);  // Fork but panics on failure.
 void panic(char*);
 struct cmd *parsecmd(char*);
+
 // Execute cmd.  Never returns.
 void
 runcmd(struct cmd *cmd)
@@ -139,91 +142,229 @@ getcmd(char *buf, int nbuf)
     return -1;
   return 0;
 }
+//prints out history when called
+int historyOut(char **history, int histNum)
+{
+int tempNum = histNum - 1; 
+int currLoc = tempNum % MAX_HISTORY; //current location in array
+int lineNum = histNum; //keeps track of the number assigned to the history val.
+int i;
+
+if(histNum <= 10)
+{
+	for(i = currLoc; i>=0; i--)
+	{
+		printf(2, "%d ", lineNum);
+		printf(2, "%s \n", history[currLoc]);
+		currLoc--;
+		lineNum--;
+	}
+}
+
+else
+{
+	int border = 8 - currLoc; //offsets for wraparound
+	while(currLoc >= 0)
+	{
+		printf(2, "%d ", lineNum);
+		printf(2, "%s \n", history[currLoc]);
+		currLoc--;
+		lineNum--;
+	}
+	currLoc = 9;
+
+	while(border >= 0)
+	{
+		printf(2, "%d ", lineNum);
+		printf(2, "%s \n", history[currLoc]);
+		currLoc--;
+		lineNum--;
+		border--;
+	}
+}
+return histNum;
+}
+//adds values to the history when called
+int historyUpdate(char **history, char *enteredArgs, int histNum)
+{
+int tempNum2 = histNum++;
+int index = tempNum2 % MAX_HISTORY;
+strcpy(history[index], enteredArgs);
+return histNum;
+}
+//returns the string of the last value entered that was stored in history
+char* lastHistory(char **history, char* buffer, int histNum)
+{
+	int index = (histNum - 1) % 10;
+        strcpy(buffer, history[index]);
+	printf(2, "%s\n", buffer);
+	return buffer;
+}
+//returns the string of the value stored at the historyIndex entered by the user
+//following !
+char* chooseFromHistory(char** history, int histNum, int historyIndex)
+{
+int index = historyIndex-1 % 10;
+
+printf(2, "%d: ", historyIndex);
+printf(2, "%s\n", history[index]);
+return history[index];
+}
+//implemented my own check since isdigit can't be imported here
+int digCheck(char num)
+{
+	if(num == '0')
+	return 1;
+	else if(num == '1')
+	return 1;
+	else if(num == '2')
+	return 1;
+	else if(num == '3')
+	return 1;
+	else if(num == '4')
+	return 1;
+	else if(num == '5')
+	return 1;
+	else if(num == '6')
+	return 1;
+	else if(num == '7')
+	return 1;
+	else if(num == '8')
+	return 1;
+	else if(num == '9')
+	return 1;
+	return 0;
+}
+//changes the char to an int since sscanf can't be used here
+int convertDigit(char num)
+{
+	if(num == '0')
+	return 0;
+	else if(num == '1')
+	return 1;
+	else if(num == '2')
+	return 2;
+	else if(num == '3')
+	return 3;
+	else if(num == '4')
+	return 4;
+	else if(num == '5')
+	return 5;
+	else if(num == '6')
+	return 6;
+	else if(num == '7')
+	return 7;
+	else if(num == '8')
+	return 8;
+	else return 9;
+}
 
 int
 main(void)
 {
-  char *history[10];
   static char buf[100];
   int fd;
-  int hisCount = 0;
+  char** history;
+  int histNum;
+  history = malloc(100 * sizeof(char *));
+  int i;
+  
+for(i = 0; i< 100; i++)
+{
+history[i] = malloc(100 * sizeof(char));
+history[i][0] = '\0';
+}
   
   // Assumes three file descriptors open.
   while((fd = open("console", O_RDWR)) >= 0){
-     if(fd >= 3){
+    if(fd >= 3){
       close(fd);
       break;
     }
   }
-  int cmdCount = 0;
-  int historyIndex = 0;
+  
   // Read and run input commands.
   while(getcmd(buf, sizeof(buf)) >= 0){
-     buf[strlen(buf)-1] = 0;
-    if(buf[0] == '!' && buf[1] == '!'){
-        if(cmdCount == 0){
-            printf(1, "No history found\n");
-            continue;
-        }
-        else{ 
-            if(historyIndex == 0){
-                strcpy(buf, history[9]);
-            }else{
-                strcpy(buf, history[historyIndex-1]);
-            }
-        }
-    }else if(buf[0] == '!' && buf[1] != '!'){
-       int num =(int)(long)buf[1];
-       num -= 48;
-       if(num < 0 || num>hisCount || num > 9){
-            printf(1,"There is no command at this index\n");
-            continue;
-       }else
-            strcpy(buf, history[num]);
-    }else{
-        hisCount++;
-        char *temp = malloc(strlen(buf)+1);
-        strcpy(temp, buf);
-        history[historyIndex] = temp;
-        if(historyIndex < 9)
-            historyIndex++;
-        else
-            historyIndex = 0;
-    }
-    if(strcmp(buf, "history") == 0){
-        int length = 0;
-        if(cmdCount > 9)
-            length = 10;
-        else
-            length = historyIndex;
-	int i;
-        for(i = 0; i < length; i++){
-            printf(2, "%d :", i);
-            printf(2, " %s \n", history[i]);
-        }
-        cmdCount++;
-        continue;
-    }
-    if(strcmp(buf, "pwd") == 0){
-        char path[MAX_PATH];
-        getcwd(path, MAX_PATH);
-        printf(2, "%s\n", path);
-        continue;
-    }
+	buf[strlen(buf) - 1] =0;
     if(buf[0] == 'c' && buf[1] == 'd' && buf[2] == ' '){
       // Clumsy but will have to do for now.
       // Chdir has no effect on the parent if run in the child.
-      //buf[strlen(buf)-1] = 0;  // chop \n
+      buf[strlen(buf)-1] = 0;  // chop \n
       if(chdir(buf+3) < 0)
         printf(2, "cannot cd %s\n", buf+3);
-      cmdCount++;
       continue;
     }
-    cmdCount++;
+    char* temp = &buf[0];
+    
+    //runs historyOut to print history
+    if(strcmp(buf, "history")== 0)
+    {
+	if(histNum < 1)
+		printf(1, "No commands in history\n");
+	else
+	historyOut(history, histNum);
+	continue;
+    }
+    //calls lastHistory to rerun the last command entered
+    if(strcmp(buf, "!!") == 0)
+    {
+	if(histNum < 1)
+		printf(1, "No commands in history\n");
+	else
+	{
+	strcpy(buf,lastHistory(history, buf, histNum));
+	histNum = historyUpdate(history, buf, histNum);
+	if(fork1() == 0)
+	{	
+	runcmd(parsecmd(buf));
+	}
+	wait();
+	}
+	continue;
+    }
+
+     if(strcmp(buf, "ps") == 0)
+	{
+		histNum = historyUpdate(history, temp, histNum);
+		ps();
+		continue;
+	}
+    //determines the value entered after ! and calls chooseFromHistory with that value
+    if(buf[0] == '!' && buf[1] != '!')
+    {
+	if(digCheck(buf[1]))
+	{
+		int test = 0;
+		if(digCheck(buf[2])){test = 10*convertDigit(buf[1]) + convertDigit(buf[2]);}
+		else test = convertDigit(buf[1]);
+		
+			if(test > 0 && test <= histNum && test > histNum - 10)
+			{
+				strcpy(buf, chooseFromHistory(history, histNum, test));
+				histNum = historyUpdate(history, buf, histNum);
+				if(fork1() == 0)
+				{
+				runcmd(parsecmd(buf));
+				}
+				wait();
+			}
+			else
+			printf(1, "This value is not in the history.\n");
+
+		continue;
+	}
+	else {printf(1, "Error incorrect format");
+	continue;}
+    }
+    //defaults and runs the command on xv6
+    else{
+    histNum = historyUpdate(history, temp, histNum);
     if(fork1() == 0)
+    {
       runcmd(parsecmd(buf));
+    }
     wait();
-  }
+  }}
   exit();
 }
 

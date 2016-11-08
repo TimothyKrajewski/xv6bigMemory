@@ -423,60 +423,72 @@ sys_pipe(void)
   fd[1] = fd1;
   return 0;
 }
-int name_of_inode(struct inode *ip, struct inode *parent, char buf[DIRSIZ]){
-    uint off;
-    struct dirent de;
-    for (off = 0; off < parent->size; off += sizeof(de)){
-        if(readi(parent, (char*)&de, off, sizeof(de)) != sizeof(de))
-            panic("couldn't read dir");
-        if (de.inum == ip->inum) {
-            safestrcpy(buf, de.name, DIRSIZ);
-            return 0;
-        }
-    }
-    return -1;
+
+int iNodeName(struct inode *ip, struct inode *parent, char buf[DIRSIZ])
+{
+	uint off; //uint needs to be used instead of int?
+	struct dirent de; //dirent  = inode directory with name
+for(off = 0; off < parent->size; off += sizeof(de))
+{
+	if(readi(parent, (char*)&de, off, sizeof(de)) != sizeof(de))
+	panic("couldnt read directory entry");
+	if(de.inum == ip->inum)
+	{
+	safestrcpy(buf, de.name, DIRSIZ);
+	return 0;
+	}
+}
+	return -1; //failed, R.I.P file system
 }
 
-int name_for_inode(char* buf, int n, struct inode *ip){
-    int path_offset;
-    struct inode *parent;
-    char node_name[DIRSIZ];
-    if (ip->inum == namei("/")->inum){
-        buf[0] = '/';
-        return 1;
-    }else if (ip->type == T_DIR){
-        parent = dirlookup(ip, "..", 0);
-        ilock(parent);
-        if(name_of_inode(ip, parent, node_name)){
-            panic("parent not found");
-        }
-        path_offset = name_for_inode(buf, n, parent);
-        safestrcpy(buf + path_offset, node_name, n - path_offset);
-        if(path_offset == n -1){
-            buf[path_offset] = '\0';
-            return n;
-        }else{
-            buf[strlen(buf)] = 'a';
-		int i =0;
-            for(i = strlen(buf)-1; i >path_offset; i--){
-                buf[i] = buf[i-1];
-            }
-            buf[path_offset+1] = buf[path_offset];
-            buf[path_offset++] = '/';
-        }
-        iput(parent);
-        return path_offset;
-    }else if(ip->type == T_DEV || ip->type == T_FILE){
-        panic("cwd is a file not a directory");
-    }else{
-        panic("unknown inode type");
-    }
+
+int namediNode(char* buf, int n, struct inode *ip)
+{
+	int off_set;
+	struct inode *parent;
+	char node_name[DIRSIZ];
+	if(ip-> inum == namei("/")->inum)
+	{
+		buf[0] = '/';
+		return 1;
+	}
+else if(ip->type == T_DIR)
+{
+	parent = dirlookup(ip, "..", 0);
+	ilock(parent);
+	if(iNodeName(ip, parent, node_name)) // if the parent file doesn't have a name
+		panic("could not find parent's inode name");
+	off_set = namediNode(buf, n, parent);
+	safestrcpy(buf + off_set, node_name, off_set);
+	off_set += strlen(node_name);
+
+	if(off_set == n - 1)
+	{
+		buf[off_set] = '\0';
+		return n;
+	}
+else
+	buf[off_set++] = '/'; //divides the directory names
+iput(parent);
+return off_set;
+}
+else if(ip->type == T_DEV || ip->type == T_FILE) //triggers errors if I don't have these
+	panic("process cwd is a device node");
+else
+panic("unknown inode type");
 }
 
-int sys_getcwd(void){
-    char *p;
-    int n;
-    if(argint(1, &n) < 0 || argptr(0, &p, n) < 0)
-        return -1;
-    return name_for_inode(p, n, proc->cwd);
+
+
+int sys_getcwd(void)
+{
+	char *p;
+	int n;
+	if(argint(1, &n) < 0 || argptr(0, &p, n) < 0)
+	return 1;
+
+return namediNode(p, n, proc->cwd);
 }
+
+
+
