@@ -456,4 +456,8 @@ procdump(void)
   }
 }
 
-
+int ps(void)
+{
+	procdump();
+	return 0;
+}
