@@ -465,161 +465,126 @@ memmove(void *vdst, void *vsrc, int n)
  2c0:	c3                   	ret    
 
 000002c1 <fork>:
-  name: \
-    movl $SYS_ ## name, %eax; \
-    int $T_SYSCALL; \
-    ret
-
-SYSCALL(fork)
  2c1:	b8 01 00 00 00       	mov    $0x1,%eax
  2c6:	cd 40                	int    $0x40
  2c8:	c3                   	ret    
 
 000002c9 <exit>:
-SYSCALL(exit)
  2c9:	b8 02 00 00 00       	mov    $0x2,%eax
  2ce:	cd 40                	int    $0x40
  2d0:	c3                   	ret    
 
 000002d1 <wait>:
-SYSCALL(wait)
  2d1:	b8 03 00 00 00       	mov    $0x3,%eax
  2d6:	cd 40                	int    $0x40
  2d8:	c3                   	ret    
 
 000002d9 <pipe>:
-SYSCALL(pipe)
  2d9:	b8 04 00 00 00       	mov    $0x4,%eax
  2de:	cd 40                	int    $0x40
  2e0:	c3                   	ret    
 
 000002e1 <read>:
-SYSCALL(read)
  2e1:	b8 05 00 00 00       	mov    $0x5,%eax
  2e6:	cd 40                	int    $0x40
  2e8:	c3                   	ret    
 
 000002e9 <write>:
-SYSCALL(write)
  2e9:	b8 10 00 00 00       	mov    $0x10,%eax
  2ee:	cd 40                	int    $0x40
  2f0:	c3                   	ret    
 
 000002f1 <close>:
-SYSCALL(close)
  2f1:	b8 15 00 00 00       	mov    $0x15,%eax
  2f6:	cd 40                	int    $0x40
  2f8:	c3                   	ret    
 
 000002f9 <kill>:
-SYSCALL(kill)
  2f9:	b8 06 00 00 00       	mov    $0x6,%eax
  2fe:	cd 40                	int    $0x40
  300:	c3                   	ret    
 
 00000301 <exec>:
-SYSCALL(exec)
  301:	b8 07 00 00 00       	mov    $0x7,%eax
  306:	cd 40                	int    $0x40
  308:	c3                   	ret    
 
 00000309 <open>:
-SYSCALL(open)
  309:	b8 0f 00 00 00       	mov    $0xf,%eax
  30e:	cd 40                	int    $0x40
  310:	c3                   	ret    
 
 00000311 <mknod>:
-SYSCALL(mknod)
  311:	b8 11 00 00 00       	mov    $0x11,%eax
  316:	cd 40                	int    $0x40
  318:	c3                   	ret    
 
 00000319 <unlink>:
-SYSCALL(unlink)
  319:	b8 12 00 00 00       	mov    $0x12,%eax
  31e:	cd 40                	int    $0x40
  320:	c3                   	ret    
 
 00000321 <fstat>:
-SYSCALL(fstat)
  321:	b8 08 00 00 00       	mov    $0x8,%eax
  326:	cd 40                	int    $0x40
  328:	c3                   	ret    
 
 00000329 <link>:
-SYSCALL(link)
  329:	b8 13 00 00 00       	mov    $0x13,%eax
  32e:	cd 40                	int    $0x40
  330:	c3                   	ret    
 
 00000331 <mkdir>:
-SYSCALL(mkdir)
  331:	b8 14 00 00 00       	mov    $0x14,%eax
  336:	cd 40                	int    $0x40
  338:	c3                   	ret    
 
 00000339 <chdir>:
-SYSCALL(chdir)
  339:	b8 09 00 00 00       	mov    $0x9,%eax
  33e:	cd 40                	int    $0x40
  340:	c3                   	ret    
 
 00000341 <dup>:
-SYSCALL(dup)
  341:	b8 0a 00 00 00       	mov    $0xa,%eax
  346:	cd 40                	int    $0x40
  348:	c3                   	ret    
 
 00000349 <getpid>:
-SYSCALL(getpid)
  349:	b8 0b 00 00 00       	mov    $0xb,%eax
  34e:	cd 40                	int    $0x40
  350:	c3                   	ret    
 
 00000351 <sbrk>:
-SYSCALL(sbrk)
  351:	b8 0c 00 00 00       	mov    $0xc,%eax
  356:	cd 40                	int    $0x40
  358:	c3                   	ret    
 
 00000359 <sleep>:
-SYSCALL(sleep)
  359:	b8 0d 00 00 00       	mov    $0xd,%eax
  35e:	cd 40                	int    $0x40
  360:	c3                   	ret    
 
 00000361 <uptime>:
-SYSCALL(uptime)
  361:	b8 0e 00 00 00       	mov    $0xe,%eax
  366:	cd 40                	int    $0x40
  368:	c3                   	ret    
 
 00000369 <getcwd>:
-SYSCALL(getcwd)
  369:	b8 16 00 00 00       	mov    $0x16,%eax
  36e:	cd 40                	int    $0x40
  370:	c3                   	ret    
 
 00000371 <ps>:
-SYSCALL(ps)
  371:	b8 17 00 00 00       	mov    $0x17,%eax
  376:	cd 40                	int    $0x40
  378:	c3                   	ret    
 
 00000379 <putc>:
-#include "stat.h"
-#include "user.h"
-
-static void
-putc(int fd, char c)
-{
  379:	55                   	push   %ebp
  37a:	89 e5                	mov    %esp,%ebp
  37c:	83 ec 18             	sub    $0x18,%esp
  37f:	8b 45 0c             	mov    0xc(%ebp),%eax
  382:	88 45 f4             	mov    %al,-0xc(%ebp)
-  write(fd, &c, 1);
  385:	83 ec 04             	sub    $0x4,%esp
  388:	6a 01                	push   $0x1
  38a:	8d 45 f4             	lea    -0xc(%ebp),%eax
@@ -627,48 +592,27 @@ putc(int fd, char c)
  38e:	ff 75 08             	pushl  0x8(%ebp)
  391:	e8 53 ff ff ff       	call   2e9 <write>
  396:	83 c4 10             	add    $0x10,%esp
-}
  399:	c9                   	leave  
  39a:	c3                   	ret    
 
 0000039b <printint>:
-
-static void
-printint(int fd, int xx, int base, int sgn)
-{
  39b:	55                   	push   %ebp
  39c:	89 e5                	mov    %esp,%ebp
  39e:	53                   	push   %ebx
  39f:	83 ec 24             	sub    $0x24,%esp
-  static char digits[] = "0123456789ABCDEF";
-  char buf[16];
-  int i, neg;
-  uint x;
-
-  neg = 0;
  3a2:	c7 45 f0 00 00 00 00 	movl   $0x0,-0x10(%ebp)
-  if(sgn && xx < 0){
  3a9:	83 7d 14 00          	cmpl   $0x0,0x14(%ebp)
  3ad:	74 17                	je     3c6 <printint+0x2b>
  3af:	83 7d 0c 00          	cmpl   $0x0,0xc(%ebp)
  3b3:	79 11                	jns    3c6 <printint+0x2b>
-    neg = 1;
  3b5:	c7 45 f0 01 00 00 00 	movl   $0x1,-0x10(%ebp)
-    x = -xx;
  3bc:	8b 45 0c             	mov    0xc(%ebp),%eax
  3bf:	f7 d8                	neg    %eax
  3c1:	89 45 ec             	mov    %eax,-0x14(%ebp)
  3c4:	eb 06                	jmp    3cc <printint+0x31>
-  } else {
-    x = xx;
  3c6:	8b 45 0c             	mov    0xc(%ebp),%eax
  3c9:	89 45 ec             	mov    %eax,-0x14(%ebp)
-  }
-
-  i = 0;
  3cc:	c7 45 f4 00 00 00 00 	movl   $0x0,-0xc(%ebp)
-  do{
-    buf[i++] = digits[x % base];
  3d3:	8b 4d f4             	mov    -0xc(%ebp),%ecx
  3d6:	8d 41 01             	lea    0x1(%ecx),%eax
  3d9:	89 45 f4             	mov    %eax,-0xc(%ebp)
@@ -679,7 +623,6 @@ printint(int fd, int xx, int base, int sgn)
  3e9:	89 d0                	mov    %edx,%eax
  3eb:	0f b6 80 7c 0a 00 00 	movzbl 0xa7c(%eax),%eax
  3f2:	88 44 0d dc          	mov    %al,-0x24(%ebp,%ecx,1)
-  }while((x /= base) != 0);
  3f6:	8b 5d 10             	mov    0x10(%ebp),%ebx
  3f9:	8b 45 ec             	mov    -0x14(%ebp),%eax
  3fc:	ba 00 00 00 00       	mov    $0x0,%edx
@@ -687,18 +630,13 @@ printint(int fd, int xx, int base, int sgn)
  403:	89 45 ec             	mov    %eax,-0x14(%ebp)
  406:	83 7d ec 00          	cmpl   $0x0,-0x14(%ebp)
  40a:	75 c7                	jne    3d3 <printint+0x38>
-  if(neg)
  40c:	83 7d f0 00          	cmpl   $0x0,-0x10(%ebp)
  410:	74 0e                	je     420 <printint+0x85>
-    buf[i++] = '-';
  412:	8b 45 f4             	mov    -0xc(%ebp),%eax
  415:	8d 50 01             	lea    0x1(%eax),%edx
  418:	89 55 f4             	mov    %edx,-0xc(%ebp)
  41b:	c6 44 05 dc 2d       	movb   $0x2d,-0x24(%ebp,%eax,1)
-
-  while(--i >= 0)
  420:	eb 1d                	jmp    43f <printint+0xa4>
-    putc(fd, buf[i]);
  422:	8d 55 dc             	lea    -0x24(%ebp),%edx
  425:	8b 45 f4             	mov    -0xc(%ebp),%eax
  428:	01 d0                	add    %edx,%eax
@@ -709,44 +647,23 @@ printint(int fd, int xx, int base, int sgn)
  434:	ff 75 08             	pushl  0x8(%ebp)
  437:	e8 3d ff ff ff       	call   379 <putc>
  43c:	83 c4 10             	add    $0x10,%esp
-    buf[i++] = digits[x % base];
-  }while((x /= base) != 0);
-  if(neg)
-    buf[i++] = '-';
-
-  while(--i >= 0)
  43f:	83 6d f4 01          	subl   $0x1,-0xc(%ebp)
  443:	83 7d f4 00          	cmpl   $0x0,-0xc(%ebp)
  447:	79 d9                	jns    422 <printint+0x87>
-    putc(fd, buf[i]);
-}
  449:	8b 5d fc             	mov    -0x4(%ebp),%ebx
  44c:	c9                   	leave  
  44d:	c3                   	ret    
 
 0000044e <printf>:
-
-// Print to the given fd. Only understands %d, %x, %p, %s.
-void
-printf(int fd, char *fmt, ...)
-{
  44e:	55                   	push   %ebp
  44f:	89 e5                	mov    %esp,%ebp
  451:	83 ec 28             	sub    $0x28,%esp
-  char *s;
-  int c, i, state;
-  uint *ap;
-
-  state = 0;
  454:	c7 45 ec 00 00 00 00 	movl   $0x0,-0x14(%ebp)
-  ap = (uint*)(void*)&fmt + 1;
  45b:	8d 45 0c             	lea    0xc(%ebp),%eax
  45e:	83 c0 04             	add    $0x4,%eax
  461:	89 45 e8             	mov    %eax,-0x18(%ebp)
-  for(i = 0; fmt[i]; i++){
  464:	c7 45 f0 00 00 00 00 	movl   $0x0,-0x10(%ebp)
  46b:	e9 59 01 00 00       	jmp    5c9 <printf+0x17b>
-    c = fmt[i] & 0xff;
  470:	8b 55 0c             	mov    0xc(%ebp),%edx
  473:	8b 45 f0             	mov    -0x10(%ebp),%eax
  476:	01 d0                	add    %edx,%eax
@@ -754,17 +671,12 @@ printf(int fd, char *fmt, ...)
  47b:	0f be c0             	movsbl %al,%eax
  47e:	25 ff 00 00 00       	and    $0xff,%eax
  483:	89 45 e4             	mov    %eax,-0x1c(%ebp)
-    if(state == 0){
  486:	83 7d ec 00          	cmpl   $0x0,-0x14(%ebp)
  48a:	75 2c                	jne    4b8 <printf+0x6a>
-      if(c == '%'){
  48c:	83 7d e4 25          	cmpl   $0x25,-0x1c(%ebp)
  490:	75 0c                	jne    49e <printf+0x50>
-        state = '%';
  492:	c7 45 ec 25 00 00 00 	movl   $0x25,-0x14(%ebp)
  499:	e9 27 01 00 00       	jmp    5c5 <printf+0x177>
-      } else {
-        putc(fd, c);
  49e:	8b 45 e4             	mov    -0x1c(%ebp),%eax
  4a1:	0f be c0             	movsbl %al,%eax
  4a4:	83 ec 08             	sub    $0x8,%esp
@@ -773,14 +685,10 @@ printf(int fd, char *fmt, ...)
  4ab:	e8 c9 fe ff ff       	call   379 <putc>
  4b0:	83 c4 10             	add    $0x10,%esp
  4b3:	e9 0d 01 00 00       	jmp    5c5 <printf+0x177>
-      }
-    } else if(state == '%'){
  4b8:	83 7d ec 25          	cmpl   $0x25,-0x14(%ebp)
  4bc:	0f 85 03 01 00 00    	jne    5c5 <printf+0x177>
-      if(c == 'd'){
  4c2:	83 7d e4 64          	cmpl   $0x64,-0x1c(%ebp)
  4c6:	75 1e                	jne    4e6 <printf+0x98>
-        printint(fd, *ap, 10, 1);
  4c8:	8b 45 e8             	mov    -0x18(%ebp),%eax
  4cb:	8b 00                	mov    (%eax),%eax
  4cd:	6a 01                	push   $0x1
@@ -789,15 +697,12 @@ printf(int fd, char *fmt, ...)
  4d2:	ff 75 08             	pushl  0x8(%ebp)
  4d5:	e8 c1 fe ff ff       	call   39b <printint>
  4da:	83 c4 10             	add    $0x10,%esp
-        ap++;
  4dd:	83 45 e8 04          	addl   $0x4,-0x18(%ebp)
  4e1:	e9 d8 00 00 00       	jmp    5be <printf+0x170>
-      } else if(c == 'x' || c == 'p'){
  4e6:	83 7d e4 78          	cmpl   $0x78,-0x1c(%ebp)
  4ea:	74 06                	je     4f2 <printf+0xa4>
  4ec:	83 7d e4 70          	cmpl   $0x70,-0x1c(%ebp)
  4f0:	75 1e                	jne    510 <printf+0xc2>
-        printint(fd, *ap, 16, 0);
  4f2:	8b 45 e8             	mov    -0x18(%ebp),%eax
  4f5:	8b 00                	mov    (%eax),%eax
  4f7:	6a 00                	push   $0x0
@@ -806,26 +711,18 @@ printf(int fd, char *fmt, ...)
  4fc:	ff 75 08             	pushl  0x8(%ebp)
  4ff:	e8 97 fe ff ff       	call   39b <printint>
  504:	83 c4 10             	add    $0x10,%esp
-        ap++;
  507:	83 45 e8 04          	addl   $0x4,-0x18(%ebp)
  50b:	e9 ae 00 00 00       	jmp    5be <printf+0x170>
-      } else if(c == 's'){
  510:	83 7d e4 73          	cmpl   $0x73,-0x1c(%ebp)
  514:	75 43                	jne    559 <printf+0x10b>
-        s = (char*)*ap;
  516:	8b 45 e8             	mov    -0x18(%ebp),%eax
  519:	8b 00                	mov    (%eax),%eax
  51b:	89 45 f4             	mov    %eax,-0xc(%ebp)
-        ap++;
  51e:	83 45 e8 04          	addl   $0x4,-0x18(%ebp)
-        if(s == 0)
  522:	83 7d f4 00          	cmpl   $0x0,-0xc(%ebp)
  526:	75 07                	jne    52f <printf+0xe1>
-          s = "(null)";
  528:	c7 45 f4 29 08 00 00 	movl   $0x829,-0xc(%ebp)
-        while(*s != 0){
  52f:	eb 1c                	jmp    54d <printf+0xff>
-          putc(fd, *s);
  531:	8b 45 f4             	mov    -0xc(%ebp),%eax
  534:	0f b6 00             	movzbl (%eax),%eax
  537:	0f be c0             	movsbl %al,%eax
@@ -834,26 +731,14 @@ printf(int fd, char *fmt, ...)
  53e:	ff 75 08             	pushl  0x8(%ebp)
  541:	e8 33 fe ff ff       	call   379 <putc>
  546:	83 c4 10             	add    $0x10,%esp
-          s++;
  549:	83 45 f4 01          	addl   $0x1,-0xc(%ebp)
-      } else if(c == 's'){
-        s = (char*)*ap;
-        ap++;
-        if(s == 0)
-          s = "(null)";
-        while(*s != 0){
  54d:	8b 45 f4             	mov    -0xc(%ebp),%eax
  550:	0f b6 00             	movzbl (%eax),%eax
  553:	84 c0                	test   %al,%al
  555:	75 da                	jne    531 <printf+0xe3>
  557:	eb 65                	jmp    5be <printf+0x170>
-          putc(fd, *s);
-          s++;
-        }
-      } else if(c == 'c'){
  559:	83 7d e4 63          	cmpl   $0x63,-0x1c(%ebp)
  55d:	75 1d                	jne    57c <printf+0x12e>
-        putc(fd, *ap);
  55f:	8b 45 e8             	mov    -0x18(%ebp),%eax
  562:	8b 00                	mov    (%eax),%eax
  564:	0f be c0             	movsbl %al,%eax
@@ -862,13 +747,10 @@ printf(int fd, char *fmt, ...)
  56b:	ff 75 08             	pushl  0x8(%ebp)
  56e:	e8 06 fe ff ff       	call   379 <putc>
  573:	83 c4 10             	add    $0x10,%esp
-        ap++;
  576:	83 45 e8 04          	addl   $0x4,-0x18(%ebp)
  57a:	eb 42                	jmp    5be <printf+0x170>
-      } else if(c == '%'){
  57c:	83 7d e4 25          	cmpl   $0x25,-0x1c(%ebp)
  580:	75 17                	jne    599 <printf+0x14b>
-        putc(fd, c);
  582:	8b 45 e4             	mov    -0x1c(%ebp),%eax
  585:	0f be c0             	movsbl %al,%eax
  588:	83 ec 08             	sub    $0x8,%esp
@@ -877,15 +759,11 @@ printf(int fd, char *fmt, ...)
  58f:	e8 e5 fd ff ff       	call   379 <putc>
  594:	83 c4 10             	add    $0x10,%esp
  597:	eb 25                	jmp    5be <printf+0x170>
-      } else {
-        // Unknown % sequence.  Print it to draw attention.
-        putc(fd, '%');
  599:	83 ec 08             	sub    $0x8,%esp
  59c:	6a 25                	push   $0x25
  59e:	ff 75 08             	pushl  0x8(%ebp)
  5a1:	e8 d3 fd ff ff       	call   379 <putc>
  5a6:	83 c4 10             	add    $0x10,%esp
-        putc(fd, c);
  5a9:	8b 45 e4             	mov    -0x1c(%ebp),%eax
  5ac:	0f be c0             	movsbl %al,%eax
  5af:	83 ec 08             	sub    $0x8,%esp
@@ -893,15 +771,7 @@ printf(int fd, char *fmt, ...)
  5b3:	ff 75 08             	pushl  0x8(%ebp)
  5b6:	e8 be fd ff ff       	call   379 <putc>
  5bb:	83 c4 10             	add    $0x10,%esp
-      }
-      state = 0;
  5be:	c7 45 ec 00 00 00 00 	movl   $0x0,-0x14(%ebp)
-  int c, i, state;
-  uint *ap;
-
-  state = 0;
-  ap = (uint*)(void*)&fmt + 1;
-  for(i = 0; fmt[i]; i++){
  5c5:	83 45 f0 01          	addl   $0x1,-0x10(%ebp)
  5c9:	8b 55 0c             	mov    0xc(%ebp),%edx
  5cc:	8b 45 f0             	mov    -0x10(%ebp),%eax
@@ -909,12 +779,6 @@ printf(int fd, char *fmt, ...)
  5d1:	0f b6 00             	movzbl (%eax),%eax
  5d4:	84 c0                	test   %al,%al
  5d6:	0f 85 94 fe ff ff    	jne    470 <printf+0x22>
-        putc(fd, c);
-      }
-      state = 0;
-    }
-  }
-}
  5dc:	c9                   	leave  
  5dd:	c3                   	ret    
 
