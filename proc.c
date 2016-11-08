@@ -47,6 +47,18 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->ctime = ticks;
+  p->retime = 0;
+  p->rutime = 0;
+  p->stime = 0;
+  p->fake[0] = '*';
+  p->fake[1] = '*';
+  p->fake[2] = '*';
+  p->fake[3] = '*';
+  p->fake[4] = '*';
+  p->fake[5] = '*';
+  p->fake[6] = '*';
+  p->fake[7] = '*';
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -55,11 +67,11 @@ found:
     return 0;
   }
   sp = p->kstack + KSTACKSIZE;
-  
+
   // Leave room for trap frame.
   sp -= sizeof *p->tf;
   p->tf = (struct trapframe*)sp;
-  
+
   // Set up new context to start executing at forkret,
   // which returns to trapret.
   sp -= 4;
@@ -72,6 +84,7 @@ found:
 
   return p;
 }
+
 
 //PAGEBREAK: 32
 // Set up first user process.
@@ -506,4 +519,25 @@ int wait2(int *retime, int *rutime, int *stime) {
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(proc, &ptable.lock);  //DOC: wait-sleep
   }
+}
+
+void updatestatistics() {
+  struct proc *p;
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    switch(p->state) {
+      case SLEEPING:
+        p->stime++;
+        break;
+      case RUNNABLE:
+        p->retime++;
+        break;
+      case RUNNING:
+        p->rutime++;
+        break;
+      default:
+        ;
+    }
+  }
+  release(&ptable.lock);
 }

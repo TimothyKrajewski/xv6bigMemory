@@ -66,13 +66,14 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+  uint ctime;
   int stime;
   int retime;
   int rutime; 
-  int ctime;
   int priority;
+  int fake[8];
 };
-
+void updatestatistics();
 // Process memory is laid out contiguously, low addresses first:
 //   text
 //   original data and bss
