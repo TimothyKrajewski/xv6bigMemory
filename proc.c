@@ -19,6 +19,7 @@ extern void forkret(void);
 extern void trapret(void);
 extern void yield(void);
 static void wakeup1(void *chan);
+int i = 0;
 
 void
 pinit(void)
@@ -271,11 +272,16 @@ void
 scheduler(void)
 {
   struct proc *p;
-
+ 
   for(;;){
     // Enable interrupts on this processor.
-    sti();
-
+		//cprintf("%d", i);
+    		sti();
+		//i++
+   // if(&cpu->id == 0) 
+    //{
+	//continue;
+    //}
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -285,19 +291,21 @@ scheduler(void)
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
+
       proc = p;
       switchuvm(p);
-      p->state = RUNNING;
+      p->state = RUNNING;	
       swtch(&cpu->scheduler, proc->context);
       switchkvm();
-
+  
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       proc = 0;
     }
+    
     release(&ptable.lock);
-
   }
+i++;
 }
 
 // Enter scheduler.  Must hold only ptable.lock

@@ -113,5 +113,6 @@ popcli(void)
     panic("popcli");
   if(cpu->ncli == 0 && cpu->intena)
     sti();
+   
 }
 
