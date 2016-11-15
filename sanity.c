@@ -22,9 +22,9 @@
 		int sums[3];
 		i = n; //unimportant
 		int pid;
-		//int trial;
-		//for(trial =1; trial <= 50; trial++){
-		//printf(1, "-----------------Trial %d-----------------\n\n", trial);
+		int trial;
+		for(trial =1; trial <= 50; trial++){
+		printf(1, "-----------------Trial %d-----------------\n\n", trial);
 		printf(1, "Processes started in pid order: ");
 		for (i = 1; i <= n; i++) 
 		{
@@ -66,7 +66,7 @@
 	rutime = 0;
 	stime = 0; 
 	
-	//}	
+	}	
 	exit();
 	}
 
