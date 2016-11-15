@@ -31,8 +31,7 @@
 	//switch(j) {
 	// case 0: //CPU‐bound process (CPU):
 	for (k = 0; k < 100; k++){
-	for (j = 0; j < 1000000; j++){
-	}
+	for (j = 0; j < 1000000; j++){}
 	printf(1, "PID : %d\n", getpid());
 	}
 	//printf(1, "DONE : %d \n", getpid());
