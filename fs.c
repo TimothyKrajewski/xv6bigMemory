@@ -356,8 +356,8 @@ iunlockput(struct inode *ip)
 static uint
 bmap(struct inode *ip, uint bn)
 {
-  uint addr, *a;//, *indirect, *double_indirect, indirect_idx, double_indirect_idx;
-  struct buf *bp;//, *bp2;
+  uint addr, *a, *indirect, *secInd, indirect_idx, secIdx;
+  struct buf *bp, *secBp;
 
   if(bn < NDIRECT){
     if((addr = ip->addrs[bn]) == 0)
@@ -380,32 +380,33 @@ bmap(struct inode *ip, uint bn)
     return addr;
   }
    bn -= NINDIRECT;
-/*
-  if(bn < NINDIRECT*NINDIRECT){
-        if((addr = ip->addrs[NDIRECT+1]) == 0) 
-        ip->addrs[NDIRECT+1] = addr = balloc(ip->dev);
 
-        bp = bread(ip->dev, addr);
-        a = (uint*)bp->data;
-        if ((addr = a[bn/(NINDIRECT)]) == 0) 
-	{ 
-              a[bn/(NINDIRECT)] = addr = balloc(ip->dev);
-              log_write(bp);
-        }
-        brelse(bp);              
-        bp = bread(ip->dev, addr);
-        a = (uint*)bp->data;
-
-         if ((addr = a[bn%(NINDIRECT)]) == 0) 
-	{ 
-              a[bn%(NINDIRECT)] = addr = balloc(ip->dev);
-              log_write(bp);
-          }
-
-        brelse(bp);
-        return addr;
-    }
-*/
+	if (bn < NINDIRECT * NINDIRECT)
+	{
+		if ((addr = ip-> addrs [NDIRECT + 1]) == 0)
+		{
+			ip-> addrs [NDIRECT + 1] = addr = balloc (ip-> dev);
+		}
+		bp = bread (ip-> dev, addr);
+		indirect = (uint *) bp-> data;
+		indirect_idx = bn / NINDIRECT;
+		if ((addr = indirect [indirect_idx]) == 0) 
+		{
+			addr = indirect [indirect_idx] = balloc (ip-> dev);
+			log_write (bp);
+		}
+		secBp = bread (ip-> dev, addr);
+		secInd = (uint *) secBp-> data;
+		secIdx = bn% NINDIRECT;
+		if ((addr = secInd [secIdx]) == 0) 
+		{
+			addr = secInd [secIdx] = balloc (ip-> dev);
+			log_write (secBp);
+		}
+	brelse (secBp);
+	brelse (bp);
+	return addr;
+	}
   panic("bmap: out of range");
 }
 
