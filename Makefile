@@ -181,7 +181,8 @@ UPROGS=\
 	_sanity\
 	_SMLsanity\
 	_big\
-
+	_big1\
+	
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
 
